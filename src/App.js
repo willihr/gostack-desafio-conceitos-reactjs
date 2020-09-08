@@ -9,7 +9,7 @@ function App() {
   async function handleAddRepository() {
     const response = await api.post('/repositories', {
       url: "https://github.com/Rocketseat/umbriel",
-      title: "Umbriel",
+      title: `Willian ${Date.now()}`,
       techs: ["Node", "Express", "TypeScript"]
     });
 
@@ -31,6 +31,18 @@ function App() {
     setRepositories(newRepositories);
   }
 
+  async function handleLikeRepository(id) {
+    const response = await api.post(`/repositories/${id}/like`);
+
+    const repositoryIndex = repositories.findIndex(repository => repository.id === id);
+    const newRepositories = [...repositories];
+    
+    if (repositoryIndex !== -1)
+      newRepositories[repositoryIndex] = response.data;
+
+    setRepositories(newRepositories);
+  }
+
   useEffect(() => {
     api.get('/repositories').then(response => {
       setRepositories(response.data);
@@ -42,14 +54,14 @@ function App() {
       <ul data-testid="repository-list">
         {repositories.map(repository => 
           <li key={repository.id}>
-            {repository.title}
+            {repository.title} - {repository.likes} likes
 
             <button onClick={() => handleRemoveRepository(repository.id)}>
               Remover
             </button>
 
-            <button onClick={() => handleRemoveRepository(repository.id)}>
-              Remover
+            <button onClick={() => handleLikeRepository(repository.id)}>
+              Curtir
             </button>
           </li>
         )}
